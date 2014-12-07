@@ -6,7 +6,7 @@ pyHTMLParser
 ## Usage
 ```python
 parser = pyHTMLParser()
-parser.open('http://www.yahoo.co.jp')
+parser.open('http://www.example.com')
 imgs = parser.tag('img')
 for img in imgs:
 	print(img.attr('src'))
