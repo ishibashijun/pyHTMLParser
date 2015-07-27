@@ -7,9 +7,9 @@ pyHTMLParser
 ```python
 parser = pyHTMLParser()
 parser.open('http://www.example.com')
-imgs = parser.tag('img')
-for img in imgs:
-	print(img.attr('src'))
+links = parser.tag('a')
+for link in links:
+	print(link.attr('href'))
 parser.close()
 ```
 

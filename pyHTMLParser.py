@@ -1,13 +1,13 @@
 ##    Name: pyHTMLParser
 ##    Author: Jun Ishibashi
 ##    Description: jQuery like HTML Parser
-##    Version: 0.0.1
+##    Version: 1.0.0
 ##
 ##    **********************************************************************
 ##        LICENSE
 ##    **********************************************************************
 ##
-##    Copyright (c) 2013 Jun Ishibashi
+##    Copyright (c) 2015 Jun Ishibashi
 ##
 ##    Permission is hereby granted, free of charge, to any person obtaining
 ##    a copy of this software and associated documentation files (the
@@ -57,14 +57,17 @@ class pyNodeList(list):
         return self[-1]
 
     def eq(self, index):
-        return self[index]
+        if index < 0 and len(self) > abs(index):
+            return self(len(self) + index]
+        elif index >= 0 and index < len(self):
+            return self[index]
+        return None
 
     def id(self, i):
-        ret = pyNodeList()
         for node in self:
             if node.get_attr('id') == i:
-                ret.append(node)
-        return ret
+                return node
+        return None
 
     def cls(self, c):
         ret = pyNodeList()
@@ -105,7 +108,7 @@ class pyNode:
         else: return self._attr[key]
 
     def id(self):
-        return self._attr['id'] if 'id' in self._attr else ''
+        return self._attr['id'] if 'id' in self._attr else None
 
     def cls(self):
         if 'class' in self._attr: return self._attr['class']
@@ -199,7 +202,7 @@ class pyHTMLParser(HTMLParser):
         try:
             res = urlopen(self._url)
         except Exception:
-            raise Exception('Could not connect @%s' % self._url)
+            raise Exception('Error connecting at %s' % self._url)
         self._html = res.read().decode(self._decoder)
         res.close()
         self.feed(self._html)
@@ -274,7 +277,7 @@ class pyHTMLParser(HTMLParser):
 if __name__ == '__main__':
     parser = pyHTMLParser()
     parser.open('http://www.example.com')
-    imgs = parser.tag('img')
-    for img in imgs:
-        print(img.attr('src'))
+    links = parser.tag('a')
+    for link in links:
+        print(link.attr('href'))
     parser.close()
