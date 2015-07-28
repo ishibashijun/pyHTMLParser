@@ -1,10 +1,24 @@
 from setuptools import setup
 
-version = '1.1.0'
+version = '1.1.2'
 name = 'pyHTMLParser'
 short_description = 'A simple html parser/scraper/reader that constructs DOM tree.'
 long_description = """\
-A pyHTMLParser has a chaining API and tested in Python 3.4.
+A pyHTMLParser has chaining API and tested in Python 3.4.
+
+Example
+-------
+
+.. code-block:: python
+
+    from pyHTMLParser import *
+    
+    parser = pyHTMLParser()
+    parser.open('http://www.example.com')
+    links = parser.tag('a')
+    for link in links:
+        print(link.attr('href'))
+    parser.close()
 
 Some API
 --------

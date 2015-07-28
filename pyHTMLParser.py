@@ -1,7 +1,7 @@
 ##    Name: pyHTMLParser
 ##    Author: Jun Ishibashi
 ##    Description: HTML Parser/Scraper/Reader
-##    Version: 1.1.0
+##    Version: 1.1.2
 ##
 ##    **********************************************************************
 ##        LICENSE
