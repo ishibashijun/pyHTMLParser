@@ -1,10 +1,10 @@
 from setuptools import setup
 
-version = '1.0.0'
+version = '1.1.0'
 name = 'pyHTMLParser'
-short_description = 'A simple html parser/scraper that constructs DOM tree.'
+short_description = 'A simple html parser/scraper/reader that constructs DOM tree.'
 long_description = """\
-A pyHTMLParser has a jQuery like API and tested in Python 3.4.
+A pyHTMLParser has a chaining API and tested in Python 3.4.
 
 Some API
 --------
