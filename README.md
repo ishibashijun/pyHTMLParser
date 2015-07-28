@@ -1,7 +1,7 @@
 pyHTMLParser
 =========
 
-### jQuery like HTML parser
+### HTML parser/scraper/reader
 
 ## Usage
 ```python
