@@ -1,7 +1,7 @@
 ##    Name: pyHTMLParser
 ##    Author: Jun Ishibashi
-##    Description: jQuery like HTML Parser
-##    Version: 1.0.0
+##    Description: HTML Parser/Scraper/Reader
+##    Version: 1.1.0
 ##
 ##    **********************************************************************
 ##        LICENSE
@@ -58,10 +58,32 @@ class pyNodeList(list):
 
     def eq(self, index):
         if index < 0 and len(self) > abs(index):
-            return self(len(self) + index]
+            return self[len(self) + index]
         elif index >= 0 and index < len(self):
             return self[index]
         return None
+
+    def even(self):
+        ret = pyNodeList()
+        is_even = False
+        for i in range(len(self)):
+            if is_even: ret.append(self[i])
+            is_even = not is_even
+        return ret
+
+    def odd(self):
+        ret = pyNodeList()
+        is_odd = True
+        for i in range(len(self)):
+            if is_odd: ret.append(self[i])
+            is_odd = not is_odd
+        return ret
+
+    def gt(self, index):
+        return self[index:]
+
+    def lt(self, index):
+        return self[:index]
 
     def id(self, i):
         for node in self:
@@ -73,7 +95,14 @@ class pyNodeList(list):
         ret = pyNodeList()
         for node in self:
             n = node.attr('class')
-            if n is not None and n.find(c) != -1:
+            if 'class' in self._attr and node.attr('class').find(c) is not -1:
+                ret.append(node)
+        return ret
+
+    def contains(self, text):
+        ret = pyNodeList()
+        for node in self:
+            if node.text().find(text) is not -1:
                 ret.append(node)
         return ret
 
@@ -113,6 +142,11 @@ class pyNode:
     def cls(self):
         if 'class' in self._attr: return self._attr['class']
         else: return None
+
+    def has_class(self, cls):
+        if 'class' in self._attr:
+            return self._attr['class'].find(cls) is not -1
+        return False
 
     def html(self):
         if self._html != '': return self._html
@@ -169,6 +203,27 @@ class pyNode:
         for node in self._children:
             if node.name() == childTag:
                 ret.append(node)
+        return ret
+
+    def nextAll(self):
+        ret = pyNodeList()
+        if self.has_parent():
+            brothers = self._parent.children()
+            pass_me = False
+            for i in range(len(brothers)):
+                bro = brothers[i]
+                if pass_me: ret.append(bro)
+                if bro is self: pass_me = True
+        return ret
+
+    def prevAll(self):
+        ret = pyNodeList()
+        if self.has_parent():
+            brothers = self._parent.children()
+            for i in range(len(brothers)):
+                bro = brothers[i]
+                if bro is self: break
+                ret.append(bro)
         return ret
     
 class pyHTMLParser(HTMLParser):
