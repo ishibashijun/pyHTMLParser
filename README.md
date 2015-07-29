@@ -5,7 +5,9 @@ pyHTMLParser
 
 ## Usage
 ```python
-parser = pyHTMLParser()
+from pyHTMLParser.Parser import Parser
+
+parser = Parser()
 parser.open('http://www.example.com')
 links = parser.tag('a')
 for link in links:
