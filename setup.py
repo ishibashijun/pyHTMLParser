@@ -1,6 +1,6 @@
 from setuptools import setup
 
-version = '1.1.2'
+version = '1.1.4'
 name = 'pyHTMLParser'
 short_description = 'A simple html parser/scraper/reader that constructs DOM tree.'
 long_description = """\
@@ -11,9 +11,9 @@ Example
 
 .. code-block:: python
 
-    from pyHTMLParser import *
+    from pyHTMLParser.Parser import Parser
     
-    parser = pyHTMLParser()
+    parser = Parser()
     parser.open('http://www.example.com')
     links = parser.tag('a')
     for link in links:
@@ -58,15 +58,15 @@ classifiers = [
 
 setup(
     name = name,
+    packages = ['pyHTMLParser'],
     version = version,
     description = short_description,
     long_description = long_description,
     classifiers = classifiers,
     license = 'MIT',
     keywords = ['parse', 'scrape', 'html',
-                'parser', 'tree', 'DOM',
-                'jquery'],
+                'parser', 'tree', 'DOM'],
     author = 'Jun Ishibashi',
     author_email = 'ishibashijun@gmail.com',
-    url = 'http://ishibashijun.github.io/'
+    url = 'https://github.com/ishibashijun/pyHTMLParser'
 )
