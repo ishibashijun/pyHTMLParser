@@ -1,10 +1,10 @@
 from setuptools import setup
 
-version = '1.1.4'
+version = '1.2.1'
 name = 'pyHTMLParser'
-short_description = 'A simple html parser/scraper/reader that constructs DOM tree.'
+short_description = 'A simple html parser that constructs DOM tree.'
 long_description = """\
-A pyHTMLParser has chaining API and tested in Python 3.4.
+It aims to provide jquery like API thus it has features like chaining methods.
 
 Example
 -------
@@ -20,32 +20,10 @@ Example
         print(link.attr('href'))
     parser.close()
 
-Some API
---------
+Documentation
+-------------
 
-pyHTMLParser
-
-    tag - returns a pyNodeList matching a tag name
-
-    id - returns a pyNode matching the provided ID
-
-    cls - returns a pyNodeList containing a class name
-
-pyNodeList
-
-    eq - returns a single element at the specified index
-
-    first - returns a first element of the html
-
-    last - returns a last element of the html
-
-pyNode
-
-    name - returns a tab name
-
-    cls - returns a class name(s)
-
-    text - returns a text
+`API Docs <http://ishibashijun.github.io/pyHTMLParser/>`_ .
 """
 
 classifiers = [
@@ -68,5 +46,5 @@ setup(
                 'parser', 'tree', 'DOM'],
     author = 'Jun Ishibashi',
     author_email = 'ishibashijun@gmail.com',
-    url = 'https://github.com/ishibashijun/pyHTMLParser'
+    url = 'http://ishibashijun.github.io/pyHTMLParser/'
 )

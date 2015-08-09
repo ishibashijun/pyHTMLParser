@@ -1,3 +1,26 @@
+# Copyright (c) 2015 Jun Ishibashi
+#
+# Permission is hereby granted, free of charge, to any person 
+# obtaining a copy of this software and associated documentation 
+# files (the "Software"), to deal in the Software without 
+# restriction, including without limitation the rights to use, 
+# copy, modify, merge, publish, distribute, sublicense, and/or sell 
+# copies of the Software, and to permit persons to whom the 
+# Software is furnished to do so, subject to the following 
+# conditions:
+#
+# The above copyright notice and this permission notice shall be 
+# included in all copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
+# EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES 
+# OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND 
+# NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT 
+# HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, 
+# WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING 
+# FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE 
+# OR OTHER DEALINGS IN THE SOFTWARE.
+
 from pyHTMLParser.pyNodeList import pyNodeList
 
 class pyNode:
@@ -43,7 +66,7 @@ class pyNode:
         return False
 
     def html(self):
-        if self._html != '': return self._html
+        if self._html is not '': return self._html
         self._html += '<'+self.name()
         for attr in self._attr:
             self._html += ' '+attr+'="'+self._attr[attr]+'"'
@@ -91,7 +114,7 @@ class pyNode:
     def children(self):
         return self._children
 
-    def child(self, childTag=None):
+    def child(self, child_tag=None):
         if childTag is None: return self._children
         ret = pyNodeList()
         for node in self._children:
@@ -99,7 +122,7 @@ class pyNode:
                 ret.append(node)
         return ret
 
-    def nextAll(self):
+    def next_all(self):
         ret = pyNodeList()
         if self.has_parent():
             brothers = self._parent.children()
@@ -110,7 +133,7 @@ class pyNode:
                 if bro is self: pass_me = True
         return ret
 
-    def prevAll(self):
+    def prev_all(self):
         ret = pyNodeList()
         if self.has_parent():
             brothers = self._parent.children()

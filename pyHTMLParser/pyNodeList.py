@@ -1,3 +1,26 @@
+# Copyright (c) 2015 Jun Ishibashi
+#
+# Permission is hereby granted, free of charge, to any person 
+# obtaining a copy of this software and associated documentation 
+# files (the "Software"), to deal in the Software without 
+# restriction, including without limitation the rights to use, 
+# copy, modify, merge, publish, distribute, sublicense, and/or sell 
+# copies of the Software, and to permit persons to whom the 
+# Software is furnished to do so, subject to the following 
+# conditions:
+#
+# The above copyright notice and this permission notice shall be 
+# included in all copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
+# EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES 
+# OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND 
+# NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT 
+# HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, 
+# WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING 
+# FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE 
+# OR OTHER DEALINGS IN THE SOFTWARE.
+
 class pyNodeList(list):
 
     def __init__(self):
@@ -10,25 +33,23 @@ class pyNodeList(list):
         return self[-1]
 
     def eq(self, index):
-        if index < 0 and len(self) > abs(index):
-            return self[index]
-        elif index >= 0 and index < len(self):
+        if len(self) > abs(index):
             return self[index]
         return None
 
     def even(self):
         ret = pyNodeList()
         is_even = False
-        for i in range(len(self)):
-            if is_even: ret.append(self[i])
+        for node in self:
+            if is_even: ret.append(node)
             is_even = not is_even
         return ret
 
     def odd(self):
         ret = pyNodeList()
         is_odd = True
-        for i in range(len(self)):
-            if is_odd: ret.append(self[i])
+        for node in self:
+            if is_odd: ret.append(node)
             is_odd = not is_odd
         return ret
 
