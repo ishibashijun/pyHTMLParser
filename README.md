@@ -15,6 +15,9 @@ for link in links:
 parser.close()
 ```
 
+## Documentation
+[API Docs](http://ishibashijun.github.io/pyHTMLParser/)
+
 ## LICENSE
 
 [MIT](http://www.opensource.org/licenses/mit-license.php)
