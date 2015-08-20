@@ -1,10 +1,10 @@
 from setuptools import setup
 
-version = '1.2.1'
+version = '1.4.0'
 name = 'pyHTMLParser'
 short_description = 'A simple html parser that constructs DOM tree.'
 long_description = """\
-It aims to provide jquery like API thus it has features like chaining methods.
+It is aimed to provide jquery like API.
 
 Example
 -------
