@@ -26,6 +26,9 @@ class pyNodeList(list):
     def __init__(self):
         super(self.__class__, self).__init__()
 
+    def size(self):
+        return len(self)
+
     def first(self):
         return self[0]
 
@@ -61,7 +64,7 @@ class pyNodeList(list):
 
     def id(self, i):
         for node in self:
-            if node.get_attr('id') == i:
+            if node.attr('id') == i:
                 return node
         return None
 
@@ -73,9 +76,30 @@ class pyNodeList(list):
                 ret.append(node)
         return ret
 
+    def has_class(self, c):
+        for node in self:
+            n = node.attr('class')
+            if n.find(c) is not -1:
+                return True
+        return False
+
     def contains(self, text):
         ret = pyNodeList()
         for node in self:
             if node.text().find(text) is not -1:
                 ret.append(node)
+        return ret
+
+    def siblings(self):
+        temp = pyNodeList()
+        for node in self:
+            brothers = node.siblings()
+            if len(brothers) is not 0:
+                temp.extend(brothers)
+        ret = pyNodeList()
+        ret.append(temp[0])
+        for t in temp:
+            for r in ret:
+                if t != r:
+                    ret.append(t)
         return ret
