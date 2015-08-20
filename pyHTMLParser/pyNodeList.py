@@ -72,21 +72,21 @@ class pyNodeList(list):
         ret = pyNodeList()
         for node in self:
             n = node.attr('class')
-            if n is not None and n.find(c) is not -1:
+            if n != None and n.find(c) != -1:
                 ret.append(node)
         return ret
 
     def has_class(self, c):
         for node in self:
             n = node.attr('class')
-            if n.find(c) is not -1:
+            if n.find(c) != -1:
                 return True
         return False
 
     def contains(self, text):
         ret = pyNodeList()
         for node in self:
-            if node.text().find(text) is not -1:
+            if node.text().find(text) != -1:
                 ret.append(node)
         return ret
 
@@ -94,7 +94,7 @@ class pyNodeList(list):
         temp = pyNodeList()
         for node in self:
             brothers = node.siblings()
-            if len(brothers) is not 0:
+            if len(brothers) != 0:
                 temp.extend(brothers)
         ret = pyNodeList()
         ret.append(temp[0])

@@ -31,14 +31,14 @@ from pyHTMLParser.pyNode import pyNode
 
 def url_checker(url):
     result = re.match('^http[s]?://', url)
-    if result is None: return False
+    if result == None: return False
     else: return True
     
 class Parser(HTMLParser):
 
     def __init__(self, url=None):
         super(self.__class__, self).__init__()
-        if url is not None:
+        if url != None:
             if not url_checker(url):
                 raise ValueError('Url must start with http:// or https://')
             else:
@@ -54,13 +54,13 @@ class Parser(HTMLParser):
         self._decoder = dec
 
     def open(self, url=None):
-        if url is not None:
+        if url != None:
             if not url_checker(url):
                 raise ValueError('Url must start with http:// or https://')
             else:
                 self._url = url
         else:
-            if self._url is None:
+            if self._url == None:
                 raise ValueError('Url is empty')
         try:
             res = urlopen(self._url)

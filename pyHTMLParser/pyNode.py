@@ -57,7 +57,7 @@ class pyNode:
         self._name = name
 
     def is_null(self):
-        return True if self._name is None else False
+        return True if self._name == None else False
 
     def set_attr(self, key, value):
         if not key in self._attr: self._attr[key] = value
@@ -76,12 +76,12 @@ class pyNode:
 
     def has_class(self, cls):
         if 'class' in self._attr:
-            return self._attr['class'].find(cls) is not -1
+            return self._attr['class'].find(cls) != -1
         return False
 
     def html(self):
-        if self._name is not 'comment':
-            if self._html is not '': return self._html
+        if self._name != 'comment':
+            if self._html != '': return self._html
             self._html += '<'+self.name()
             for attr in self._attr:
                 self._html += ' '+attr+'="'+self._attr[attr]+'"'
@@ -99,11 +99,11 @@ class pyNode:
         self._html = html
 
     def text(self):
-        if self._name is not 'comment':
+        if self._name != 'comment':
             ret = self._text
             if self.has_child():
                 for child in self._children:
-                    if ret is not '':
+                    if ret != '':
                         ret += ' ' + child.text()
                     else:
                         ret += child.text()
@@ -128,7 +128,7 @@ class pyNode:
         self._comment.append(comment)
 
     def has_parent(self):
-        return False if self._parent is None else True
+        return False if self._parent == None else True
 
     def set_parent(self, parent):
         self._parent = parent
@@ -146,7 +146,7 @@ class pyNode:
         return ret
 
     def has_child(self):
-        return len(self._children) is not 0
+        return len(self._children) != 0
 
     def add_child(self, child):
         self._children.append(child)
@@ -154,12 +154,12 @@ class pyNode:
     def children(self):
         ret = []
         for child in self._children:
-            if child.name() is not 'comment':
+            if child.name() != 'comment':
                 ret.append(child)
         return ret
 
     def child(self, child_tag=None):
-        if childTag is None: return self.children()
+        if childTag == None: return self.children()
         ret = pyNodeList()
         for node in self._children:
             if node.name() == childTag:
@@ -172,10 +172,10 @@ class pyNode:
             brothers = self._parent.children()
             pass_me = False
             for i in range(len(brothers)):
-                if brothers[i].name() is not 'comment':
+                if brothers[i].name() != 'comment':
                     bro = brothers[i]
                     if pass_me: ret.append(bro)
-                    if bro is self: pass_me = True
+                    if bro == self: pass_me = True
         return ret
 
     def prev_all(self):
@@ -183,14 +183,17 @@ class pyNode:
         if self.has_parent():
             brothers = self._parent.children()
             for i in range(len(brothers)):
-                if brothers[i].name() is not 'comment':
+                if brothers[i].name() != 'comment':
                     bro = brothers[i]
-                    if bro is self: break
+                    if bro == self: break
                     ret.append(bro)
         return ret
 
     def siblings(self):
         ret = pyNodeList()
         if self.has_parent():
-            ret.extend(self._parent.children())
+            children = self._parent.children()
+            for child in children:
+                if ch != self:
+                    ret.append(ch)
         return ret
