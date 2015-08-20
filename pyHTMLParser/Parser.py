@@ -97,6 +97,16 @@ class Parser(HTMLParser):
     def cls(self, c):
         return self._nodes.cls(c)
 
+    def header(self):
+        ret = pyNodeList()
+        ret.extend(self._nodes.tag('h1'))
+        ret.extend(self._nodes.tag('h2'))
+        ret.extend(self._nodes.tag('h3'))
+        ret.extend(self._nodes.tag('h4'))
+        ret.extend(self._nodes.tag('h5'))
+        ret.extend(self._nodes.tag('h6'))
+        return ret
+
     def handle_starttag(self, tag, attrs):
         if not self._is_started:
             if tag.lower() == 'html':
