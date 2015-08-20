@@ -22,6 +22,7 @@
 # OR OTHER DEALINGS IN THE SOFTWARE.
 
 from pyHTMLParser.pyNodeList import pyNodeList
+from pyHTMLParser.ParserUtils import is_self_closing
 
 class pyNode:
 
@@ -30,6 +31,7 @@ class pyNode:
         self._attr = {}
         self._html = ''
         self._text = ''
+        self._comment = []
         self._parent = None
         self._children = pyNodeList()
 
@@ -66,26 +68,52 @@ class pyNode:
         return False
 
     def html(self):
-        if self._html is not '': return self._html
-        self._html += '<'+self.name()
-        for attr in self._attr:
-            self._html += ' '+attr+'="'+self._attr[attr]+'"'
-        self._html += '>'+self._text
-        if not is_self_closing(self.name()):
-            if self.has_child:
-                for ch in self.children():
-                    self._html += ch.html()
-            self._html += '</'+self.name()+'>'
-        return self._html
+        if self._name is not 'comment':
+            if self._html is not '': return self._html
+            self._html += '<'+self.name()
+            for attr in self._attr:
+                self._html += ' '+attr+'="'+self._attr[attr]+'"'
+            self._html += '>'+self._text
+            if not is_self_closing(self.name()):
+                if self.has_child:
+                    for ch in self._children:
+                        self._html += ch.html()
+                self._html += '</'+self.name()+'>'
+            return self._html
+        else:
+            return self.comment()
 
     def set_html(self, html):
         self._html = html
 
     def text(self):
-        return self._text
+        if self._name is not 'comment':
+            ret = self._text
+            if self.has_child():
+                for child in self._children:
+                    if ret is not '':
+                        ret += ' ' + child.text()
+                    else:
+                        ret += child.text()
+            return ret
+        else:
+            return self.comment()
 
     def set_text(self, text):
         self._text = text
+
+    def add_text(self, text):
+        self._text += text
+
+    def comment(self):
+        ret = []
+        for comment in self._comment:
+            com = '<!--' + comment + '-->'
+            ret.append(com)
+        return ' '.join(ret)
+
+    def add_comment(self, comment):
+        self._comment.append(comment)
 
     def has_parent(self):
         return False if self._parent is None else True
@@ -112,10 +140,14 @@ class pyNode:
         self._children.append(child)
 
     def children(self):
-        return self._children
+        ret = []
+        for child in self._children:
+            if child.name() is not 'comment':
+                ret.append(child)
+        return ret
 
     def child(self, child_tag=None):
-        if childTag is None: return self._children
+        if childTag is None: return self.children()
         ret = pyNodeList()
         for node in self._children:
             if node.name() == childTag:
@@ -128,9 +160,10 @@ class pyNode:
             brothers = self._parent.children()
             pass_me = False
             for i in range(len(brothers)):
-                bro = brothers[i]
-                if pass_me: ret.append(bro)
-                if bro is self: pass_me = True
+                if brothers[i].name() is not 'comment':
+                    bro = brothers[i]
+                    if pass_me: ret.append(bro)
+                    if bro is self: pass_me = True
         return ret
 
     def prev_all(self):
@@ -138,7 +171,8 @@ class pyNode:
         if self.has_parent():
             brothers = self._parent.children()
             for i in range(len(brothers)):
-                bro = brothers[i]
-                if bro is self: break
-                ret.append(bro)
+                if brothers[i].name() is not 'comment':
+                    bro = brothers[i]
+                    if bro is self: break
+                    ret.append(bro)
         return ret

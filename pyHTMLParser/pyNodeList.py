@@ -69,7 +69,7 @@ class pyNodeList(list):
         ret = pyNodeList()
         for node in self:
             n = node.attr('class')
-            if 'class' in self._attr and node.attr('class').find(c) is not -1:
+            if n is not None and n.find(c) is not -1:
                 ret.append(node)
         return ret
 

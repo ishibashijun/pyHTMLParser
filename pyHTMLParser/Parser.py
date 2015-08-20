@@ -25,6 +25,7 @@ from urllib.request import *
 from html.parser import HTMLParser
 import re
 
+from pyHTMLParser.ParserUtils import is_self_closing
 from pyHTMLParser.pyNodeList import pyNodeList
 from pyHTMLParser.pyNode import pyNode
 
@@ -32,14 +33,6 @@ def url_checker(url):
     result = re.match('^http[s]?://', url)
     if result is None: return False
     else: return True
-
-SELF_CLOSING_TAG = ['area', 'base', 'br', 'col', 'command',
-                    'embed', 'hr', 'img', 'input', 'keygen',
-                    'link', 'meta', 'param', 'source', 'track',
-                    'wbr']
-
-def is_self_closing(tag):
-    return tag in SELF_CLOSING_TAG
     
 class Parser(HTMLParser):
 
@@ -82,6 +75,7 @@ class Parser(HTMLParser):
         self._html = ''
         self._url = None
         self._nodes = pyNodeList()
+        self._is_started = False
         del self._dom[:]
 
     def raw_html(self):
@@ -95,7 +89,7 @@ class Parser(HTMLParser):
         return ret
 
     def body(self):
-        return self._nodes[0]
+        return self.tag('body').eq(0)
 
     def id(self, i):
         return self._nodes.id(i)
@@ -105,8 +99,8 @@ class Parser(HTMLParser):
 
     def handle_starttag(self, tag, attrs):
         if not self._is_started:
-            if tag.lower() == 'body':
-                node = pyNode('body')
+            if tag.lower() == 'html':
+                node = pyNode('html')
                 self._is_started = True
                 self._dom.append(node)
                 self._nodes.append(node)
@@ -124,13 +118,11 @@ class Parser(HTMLParser):
                     
     def handle_endtag(self, tag):
         if self._is_started:
-            if tag == 'body':
+            self._dom.pop()
+            if tag == 'html':
                 self._is_started = False
-                self._dom.pop()
                 assert len(self._dom) == 0, 'dom stack is not empty'
             else:
-                end_node = self._dom.pop()
-                end_node.parent()._children.extend(end_node.children())
                 assert len(self._dom) != 0, 'dom stack is empty but parsing has not ended'
 
     def handle_startendtag(self, tag, attrs):
@@ -142,12 +134,15 @@ class Parser(HTMLParser):
                 node.set_attr(attr[0], attr[1])
 
     def handle_data(self, data):
-        if self._is_started: self._dom[-1].set_text(data)
-            
-if __name__ == '__main__':
-    parser = pyHTMLParser.Parser()
-    parser.open('http://www.example.com')
-    links = parser.tag('a')
-    for link in links:
-        print(link.attr('href'))
-    parser.close()
+        if self._is_started:
+            text = data.replace('\r\n', '')
+            text = text.replace('\n', '')
+            text = text.replace('\t', '')
+            self._dom[-1].add_text(text.strip())
+
+    def handle_comment(self, data):
+        if self._is_started:
+            node = pyNode('comment')
+            node.set_parent(self._dom[-1])
+            self._dom[-1].add_child(node)
+            node.add_comment(data)
