@@ -38,6 +38,18 @@ class pyNode:
     def __str__(self):
         return self._name
 
+    def __eq__(self, node):
+        if self._name == node._name and \
+           self._attr == node._attr and \
+           self._html == node._html and \
+           self._parent == node._parent and \
+           self._children == node._children:
+            return True
+        return False
+
+    def __ne__(self, node):
+        return not self.__eq__(node)
+
     def name(self):
         return self._name
 
@@ -175,4 +187,10 @@ class pyNode:
                     bro = brothers[i]
                     if bro is self: break
                     ret.append(bro)
+        return ret
+
+    def siblings(self):
+        ret = pyNodeList()
+        if self.has_parent():
+            ret.extend(self._parent.children())
         return ret
