@@ -23,6 +23,7 @@
 
 from pyHTMLParser.pyNodeList import pyNodeList
 from pyHTMLParser.ParserUtils import is_self_closing
+import re
 
 class pyNode:
 
@@ -48,7 +49,7 @@ class pyNode:
         return False
 
     def __ne__(self, node):
-        return not self.__eq__(node)
+        return not self == node
 
     def name(self):
         return self._name
@@ -57,7 +58,7 @@ class pyNode:
         self._name = name
 
     def is_null(self):
-        return True if self._name == None else False
+        return True if self._name is None else False
 
     def set_attr(self, key, value):
         if not key in self._attr: self._attr[key] = value
@@ -128,7 +129,7 @@ class pyNode:
         self._comment.append(comment)
 
     def has_parent(self):
-        return False if self._parent == None else True
+        return False if self._parent is None else True
 
     def set_parent(self, parent):
         self._parent = parent
@@ -152,7 +153,7 @@ class pyNode:
         self._children.append(child)
 
     def children(self):
-        ret = []
+        ret = pyNodeList()
         for child in self._children:
             if child.name() != 'comment':
                 ret.append(child)
@@ -191,9 +192,35 @@ class pyNode:
 
     def siblings(self):
         ret = pyNodeList()
-        if self.has_parent():
+        if self.has_parent() == True:
             children = self._parent.children()
-            for child in children:
-                if ch != self:
+            for ch in children:
+                if self != ch:
                     ret.append(ch)
+        return ret
+
+    def descendant_tag(self, tag):
+        t = tag.lower()
+        ret = pyNodeList()
+        if self.has_child() == True:
+            children = self.children()
+            for ch in children:
+                if ch.name() == t:
+                    ret.append(ch)
+                descendant = ch.descendant_tag(t)
+                if len(descendant) != 0:
+                    ret.extend(descendant)
+        return ret
+
+    def descendant_class(self, cls):
+        ret = pyNodeList()
+        cls_name = re.compile('(' + cls + ')')
+        if self.has_child() == True:
+            children = self.children()
+            for ch in children:
+                if ch.attr('class') is not None and cls_name.search(ch.attr('class')) is not None:
+                    ret.append(ch)
+                descendant = ch.descendant_class(cls)
+                if len(descendant) != 0:
+                    ret.extend(descendant)
         return ret

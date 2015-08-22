@@ -72,6 +72,8 @@ class Parser(HTMLParser):
 
     def close(self):
         super(self.__class__, self).close()
+
+    def reset(self):
         self._html = ''
         self._url = None
         self._nodes = pyNodeList()
