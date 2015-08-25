@@ -75,9 +75,11 @@ class pyNode:
         if 'class' in self._attr: return self._attr['class']
         else: return None
 
-    def has_class(self, cls):
+    def has_cls(self, cls):
         if 'class' in self._attr:
-            return self._attr['class'].find(cls) != -1
+            cls_name = re.compile(cls)
+            if cls_name.search(self._attr['class']) is not None:
+                return True
         return False
 
     def html(self):
@@ -160,10 +162,10 @@ class pyNode:
         return ret
 
     def child(self, child_tag=None):
-        if childTag == None: return self.children()
+        if child_tag is None: return self.children()
         ret = pyNodeList()
         for node in self._children:
-            if node.name() == childTag:
+            if node.name() == child_tag:
                 ret.append(node)
         return ret
 
@@ -172,9 +174,8 @@ class pyNode:
         if self.has_parent():
             brothers = self._parent.children()
             pass_me = False
-            for i in range(len(brothers)):
-                if brothers[i].name() != 'comment':
-                    bro = brothers[i]
+            for bro in brothers:
+                if bro.name() != 'comment':
                     if pass_me: ret.append(bro)
                     if bro == self: pass_me = True
         return ret
@@ -183,16 +184,15 @@ class pyNode:
         ret = pyNodeList()
         if self.has_parent():
             brothers = self._parent.children()
-            for i in range(len(brothers)):
-                if brothers[i].name() != 'comment':
-                    bro = brothers[i]
+            for bro in brothers:
+                if bro.name() != 'comment':
                     if bro == self: break
                     ret.append(bro)
         return ret
 
     def siblings(self):
         ret = pyNodeList()
-        if self.has_parent() == True:
+        if self.has_parent():
             children = self._parent.children()
             for ch in children:
                 if self != ch:
@@ -202,7 +202,7 @@ class pyNode:
     def descendant_tag(self, tag):
         t = tag.lower()
         ret = pyNodeList()
-        if self.has_child() == True:
+        if self.has_child():
             children = self.children()
             for ch in children:
                 if ch.name() == t:
@@ -212,15 +212,16 @@ class pyNode:
                     ret.extend(descendant)
         return ret
 
-    def descendant_class(self, cls):
+    def descendant_cls(self, cls):
         ret = pyNodeList()
-        cls_name = re.compile('(' + cls + ')')
-        if self.has_child() == True:
+        cls_name = re.compile(cls)
+        if self.has_child():
             children = self.children()
             for ch in children:
-                if ch.attr('class') is not None and cls_name.search(ch.attr('class')) is not None:
+                c = ch.attr('class')
+                if c is not None and cls_name.search(c) is not None:
                     ret.append(ch)
-                descendant = ch.descendant_class(cls)
+                descendant = ch.descendant_cls(cls)
                 if len(descendant) != 0:
                     ret.extend(descendant)
         return ret

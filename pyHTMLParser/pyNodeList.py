@@ -78,18 +78,18 @@ class pyNodeList(list):
 
     def cls(self, c):
         ret = pyNodeList()
-        cls_name = ('(' + c + ')')
+        cls_name = (c)
         for node in self:
             n = node.attr('class')
             if n != None and cls_name.search(n) is not None:
                 ret.append(node)
         return ret
 
-    def has_class(self, c):
-        cls_name = ('(' + c + ')')
+    def has_class(self, cls):
+        cls_name = (cls)
         for node in self:
-            n = node.attr('class')
-            if n is not None and cls_name.search(n) is not None:
+            c = node.attr('class')
+            if c is not None and cls_name.search(c) is not None:
                 return True
         return False
 
@@ -101,18 +101,14 @@ class pyNodeList(list):
         return ret
 
     def siblings(self):
-        temp = pyNodeList()
+        ret = set()
         for node in self:
             brothers = node.siblings()
             if len(brothers) != 0:
-                temp.extend(brothers)
-        ret = pyNodeList()
-        ret.append(temp[0])
-        for t in temp:
-            for r in ret:
-                if t != r:
-                    ret.append(t)
-        return ret
+                for bro in brothers:
+                    ret.add(bro)
+        if len(ret) != 0: return pyNodeList(ret)
+        return pyNodeList()
 
     def descendant_tag(self, tag):
         t = tag.lower()
@@ -123,10 +119,10 @@ class pyNodeList(list):
                 ret.extend(descendant)
         return ret
 
-    def descendant_class(self, cls):
+    def descendant_cls(self, cls):
         ret = pyNodeList()
         for node in self:
-            descendant = node.descendant_class(cls)
+            descendant = node.descendant_cls(cls)
             if len(descendant) != 0:
                 ret.extend(descendant)
         return ret
@@ -139,11 +135,12 @@ class pyNodeList(list):
                 ret.append(node)
         return ret
 
-    def not_class(self, cls):
+    def not_cls(self, cls):
         ret = pyNodeList()
-        cls_name = ('(' + cls + ')')
+        cls_name = (cls)
         for node in self:
-            if node.attr('class') is None or cls_name.search(node.attr('class')) is None:
+            c = node.attr('class')
+            if c is None or cls_name.search(c) is None:
                 ret.append(node)
         return ret
 

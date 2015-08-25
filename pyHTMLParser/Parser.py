@@ -37,7 +37,7 @@ def url_checker(url):
 class Parser(HTMLParser):
 
     def __init__(self, url=None):
-        super(self.__class__, self).__init__()
+        super(self.__class__, self).__init__(convert_charrefs = True)
         if url != None:
             if not url_checker(url):
                 raise ValueError('Url must start with http:// or https://')
