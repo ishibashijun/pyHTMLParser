@@ -1,6 +1,6 @@
 from setuptools import setup
 
-version = '1.6.1'
+version = '2.0.0'
 name = 'pyHTMLParser'
 short_description = 'A simple html parser that constructs DOM tree.'
 long_description = """\
@@ -11,14 +11,16 @@ Example
 
 .. code-block:: python
 
-    from pyHTMLParser.Parser import Parser
+    from pyHTMLParser.Query import Q_open, Q_close, Q
     
-    parser = Parser()
-    parser.open('http://www.example.com')
-    links = parser.tag('a')
-    for link in links:
-        print(link.attr('href'))
-    parser.close()
+    Q_open('http://www.example.com')
+    
+    second_target_link = Q('a[href$="-target.html"]:nth-child(2)')
+    print(second_target_link.attr('href'))
+
+    >>> some-target.html
+    
+    Q_close()
 
 Documentation
 -------------
@@ -42,8 +44,7 @@ setup(
     long_description = long_description,
     classifiers = classifiers,
     license = 'MIT',
-    keywords = ['parse', 'scrape', 'html',
-                'parser', 'tree', 'DOM'],
+    keywords = ['parse', 'html', 'jquery', 'parser', 'tree', 'DOM'],
     author = 'Jun Ishibashi',
     author_email = 'ishibashijun@gmail.com',
     url = 'http://ishibashijun.github.io/pyHTMLParser/'

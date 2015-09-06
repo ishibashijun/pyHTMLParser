@@ -1,18 +1,20 @@
 pyHTMLParser
 =========
 
-### HTML parser/scraper/reader
+### HTML parser
 
 ## Usage
 ```python
-from pyHTMLParser.Parser import Parser
+from pyHTMLParser.Query import Q_open, Q_close, Q
 
-parser = Parser()
-parser.open('http://www.example.com')
-links = parser.tag('a')
-for link in links:
-	print(link.attr('href'))
-parser.close()
+Q_open('example.com')
+
+second_target_link = Q('a[href$="-target.html"]:nth-child(2)')
+print(second_target_link.attr('href'))
+
+>>> some-target.html
+
+Q_close()
 ```
 
 ## Documentation
