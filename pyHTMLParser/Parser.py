@@ -1,4 +1,4 @@
-# Copyright (c) 2015 Jun Ishibashi
+# Copyright (c) 2017 Jun Ishibashi
 #
 # Permission is hereby granted, free of charge, to any person 
 # obtaining a copy of this software and associated documentation 
@@ -46,6 +46,7 @@ class Parser(HTMLParser):
             self._url = None
         self._dom = []
         self._nodes = pyNodeList()
+        self._is_started = False
         self._decoder = 'utf-8'
 
     def __getitem__(self, fn):
@@ -203,15 +204,23 @@ class Parser(HTMLParser):
         return ret
 
     def handle_starttag(self, tag, attrs):
-        node = pyNode(tag.lower())
-        if len(self._dom) != 0:
+        if not self._is_started:
+            if tag.lower() == 'html':
+                node = pyNode('html')
+                self._is_started = True
+                self._dom.append(node)
+                self._nodes.append(node)
+                for attr in attrs:
+                    node.set_attr(attr[0], attr[1])
+        else:
+            node = pyNode(tag.lower())
             node.set_parent(self._dom[-1])
             self._dom[-1].add_child(node)
-        if not is_self_closing(tag.lower()):
-            self._dom.append(node)
-        self._nodes.append(node)
-        for attr in attrs:
-            node.set_attr(attr[0], attr[1])
+            if not is_self_closing(tag.lower()):
+                self._dom.append(node)
+            self._nodes.append(node)
+            for attr in attrs:
+                node.set_attr(attr[0], attr[1])
                     
     def handle_endtag(self, tag):
         if self._is_started:
@@ -223,12 +232,13 @@ class Parser(HTMLParser):
                 assert len(self._dom) != 0, 'dom stack is empty but parsing has not ended'
 
     def handle_startendtag(self, tag, attrs):
-        node = pyNode(tag.lower())
-        if len(self._dom) != 0:
-            node.set_parent(self._dom[-1])
-            self._nodes.append(node)
-        for attr in attrs:
-            node.set_attr(attr[0], attr[1])
+        if self._is_started:
+            node = pyNode(tag.lower())
+            if len(self._dom) != 0:
+                node.set_parent(self._dom[-1])
+                self._nodes.append(node)
+            for attr in attrs:
+                node.set_attr(attr[0], attr[1])
 
     def handle_data(self, data):
         if self._is_started:

@@ -1,4 +1,4 @@
-# Copyright (c) 2015 Jun Ishibashi
+# Copyright (c) 2017 Jun Ishibashi
 #
 # Permission is hereby granted, free of charge, to any person 
 # obtaining a copy of this software and associated documentation 
@@ -280,7 +280,7 @@ class pyNodeList(list):
             if node.name() in h:
                 ret.append(node)
         if len(ret) == 1: return ret[0]
-        else return ret
+        else: return ret
 
     def has_cls(self, c):
         cls_name = re.compile(c)

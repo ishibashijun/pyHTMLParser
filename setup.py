@@ -1,6 +1,6 @@
 from setuptools import setup
 
-version = '2.0.0'
+version = '2.0.1'
 name = 'pyHTMLParser'
 short_description = 'A simple html parser that constructs DOM tree.'
 long_description = """\
