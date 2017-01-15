@@ -54,6 +54,8 @@ def _get_tag(tag, ancestor):
     global _parser
     if ancestor is not None and not is_pyNode(ancestor):
         return ancestor.tag(tag)
+    elif ancestor is not None and is_pyNode(ancestor):
+        return ancestor
     elif ancestor is None:
         return _parser.tag(tag)
     else:
@@ -198,7 +200,7 @@ def Q(selector, ancestor = None):
         if ancestor is None: return None
         selector = selector.strip()
         if selector == '': return None
-        symbols = ['>', '+', '-', '<']
+        symbols = ['>', '+', '~', '-', '<']
         if selector[0] in symbols:
             symbol = selector[0]
             selector = selector[1:].strip()

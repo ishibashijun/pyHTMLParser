@@ -930,7 +930,7 @@ class pyNodeList(list):
     #  Q('div ~ span')
     #Match:
     #  <div><span>not match</span></div>
-    #  <span>match</span>
+    #  <p>match <span>match</span></p>
     #  <span>match</span>
     def select_next_sibling(self):
         ret = pyNodeList()
@@ -1192,10 +1192,11 @@ class pyNode:
         self._name = name
         self._attr = {}
         self._html = ''
-        self._text = ''
+        self._text = []
         self._comment = []
         self._parent = None
         self._children = pyNodeList()
+        self._textAtNthChild = []
 
     def __str__(self):
         return self._name
@@ -1250,11 +1251,21 @@ class pyNode:
                 a = self._attr[attr]
                 if a is not None:
                     self._html += ' ' + attr + '="' + self._attr[attr] + '"'
-            self._html += '>' + self._text
+            self._html += '>'
             if not is_self_closing(self.name()):
                 if self.has_child:
-                    for ch in self._children:
-                        self._html += ch.html()
+                    size = len(self._children)
+                    j = 0
+                    if 0 in self._textAtNthChild:
+                        self._html += self._text[0]
+                        j += 1
+                    for i in range(size):
+                        self._html += self._children[i].html()
+                        if i + 1 in self._textAtNthChild:
+                            self._html += self._text[j]
+                            j += 1
+                else:
+                    self._html += self._text[0]
                 self._html += '</' + self.name() + '>'
             return self._html
         else:
@@ -1265,22 +1276,21 @@ class pyNode:
 
     def text(self):
         if self._name != 'comment':
-            ret = self._text
-            if self.has_child():
-                for child in self._children:
-                    if ret != '':
-                        ret += ' ' + child.text()
-                    else:
-                        ret += child.text()
+            ret = ''
+            size = len(self._text)
+            if size != 0:
+                for t in self._text:
+                    ret += t
             return ret
         else:
             return self.comment()
 
     def set_text(self, text):
-        self._text = text
+        self._text.append(text)
 
     def add_text(self, text):
-        self._text += text
+        self._text.append(text)
+        self._textAtNthChild.append(len(self._children))
 
     def comment(self):
         ret = []
@@ -1457,8 +1467,11 @@ class pyNode:
                 passed = False
                 for bro in brothers:
                     if bro.name() != 'comment':
-                        if passed: return bro
-                        if not passed and bro == self: passed = True
+                        if passed:
+                            return bro
+                        else:
+                            if bro == self:
+                                passed = True
         return None
 
     def prev_element(self):
@@ -1516,10 +1529,22 @@ class pyNode:
         ret = pyNodeList()
         n = self.next_all()
         if isinstance(n, pyNode):
-            ret.append(n)
+            if n.has_child():
+                for child in n.children():
+                    descendants = child.descendant()
+                    if isinstance(descendants, pyNode):
+                        ret.append(descendants)
+                    elif isinstance(descendants, pyNodeList):
+                        ret.extend(descendants)
         elif isinstance(n, pyNodeList) and len(n) != 0:
             for elem in n:
-                ret.append(elem)
+                if elem.has_child():
+                    for child in elem.children():
+                        descendants = child.descendant()
+                        if isinstance(descendants, pyNode):
+                            ret.append(descendants)
+                        elif isinstance(descendants, pyNodeList):
+                            ret.extend(descendants)
         if len(ret) == 1: return ret[0]
         else: return ret
 
@@ -1530,9 +1555,21 @@ class pyNode:
         ret = pyNodeList()
         n = self.prev_all()
         if isinstance(n, pyNode):
-            ret.append(n)
-        else:
+            if n.has_child():
+                for child in n.children():
+                    descendants = child.descendant()
+                    if isinstance(descendants, pyNode):
+                        ret.append(descendants)
+                    elif isinstance(descendants, pyNodeList):
+                        ret.extend(descendants)
+        elif isinstance(n, pyNodeList) and len(n) != 0:
             for elem in n:
-                ret.append(elem)
+                if elem.has_child():
+                    for child in elem.children():
+                        descendants = child.descendant()
+                        if isinstance(descendants, pyNode):
+                            ret.append(descendants)
+                        elif isinstance(descendants, pyNodeList):
+                            ret.extend(descendants)
         if len(ret) == 1: return ret[0]
         else: return ret
