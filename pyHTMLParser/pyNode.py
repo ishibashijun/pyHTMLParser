@@ -734,7 +734,7 @@ class pyNodeList(list):
             for parent in parents:
                 n = parent.child(tag)
                 if isinstance(n, pyNodeList) and len(n) != 0: n = n.last()
-                if n is not None and isinstance(n, pyNode): ret.append(n)
+                if n is not None: ret.append(n)
         if len(ret) == 1: return ret[0]
         else: return ret
 
@@ -848,13 +848,13 @@ class pyNodeList(list):
     def select_has(self, pynodelist):
         ret = pyNodeList()
         for node in self:
-            descendant = node.descendant()
-            if isinstance(descendant, pyNode):
+            descendants = node.descendant()
+            if isinstance(descendants, pyNode):
                 for another in pynodelist:
-                    if descendant == another:
+                    if descendants == another:
                         ret.append(node)
-            elif isinstance(descendant, pyNodeList) and len(descendant) != 0:
-                for d in descendant:
+            elif isinstance(descendants, pyNodeList) and len(descendants) != 0:
+                for d in descendants:
                     for another in pynodelist:
                         if d == another:
                             ret.append(node)
@@ -1213,7 +1213,7 @@ class pyNode:
     def __eq__(self, node):
         if self._name == node._name and \
            self._attr == node._attr and \
-           self._html == node._html and \
+           self.html() == node.html() and \
            self._parent == node._parent:
             return True
         return False

@@ -244,8 +244,7 @@ class Parser(HTMLParser):
         if self._is_started:
             text = data.replace('\r\n', '')
             text = text.replace('\n', '')
-            text = text.replace('\t', '')
-            self._dom[-1].add_text(text.strip())
+            self._dom[-1].add_text(text)
 
     def handle_comment(self, data):
         if self._is_started:

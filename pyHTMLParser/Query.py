@@ -118,9 +118,12 @@ def _is_square_bracket(selector):
 
 def _extract_selector(selector):
     selector = selector[1:]
-    pos = selector.find(')')
-    s = selector[:pos]
-    return s, selector[pos + 1:]
+    pos1 = selector.find(')')
+    pos2 = selector.find('(')
+    if pos2 != -1:
+        pos1 = selector.find(')', pos1 + 1)
+    s = selector[:pos1]
+    return s, selector[pos1 + 1:]
 
 def _is_equal(selector):
     return True if selector[0] == '=' else False
