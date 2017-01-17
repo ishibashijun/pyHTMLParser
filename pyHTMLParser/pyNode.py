@@ -159,7 +159,8 @@ class pyNodeList(list):
     #    <li>not match</li>
     #  </ul>
     def eq(self, index):
-        if len(self) > abs(index):
+        if (0 <= index and index < len(self)) or \
+           (index < 0 and abs(index) <= len(self)):
             return self[index]
         return None
 
@@ -215,7 +216,11 @@ class pyNodeList(list):
     #    <li>match</li>
     #  </ul>
     def gt(self, index):
-        return self[index:]
+        li = self[index:]
+        ret = pyNodeList()
+        for node in li:
+            ret.append(node)
+        return ret
 
     #Use:
     #  Q('li:lt(3)')
@@ -229,7 +234,11 @@ class pyNodeList(list):
     #    <li>not match</li>
     #  </ul>
     def lt(self, index):
-        return self[:index]
+        li = self[:index]
+        ret = pyNodeList()
+        for node in li:
+            ret.append(node)
+        return ret
 
     #Use:
     #  Q('div')
@@ -725,7 +734,7 @@ class pyNodeList(list):
             for parent in parents:
                 n = parent.child(tag)
                 if isinstance(n, pyNodeList) and len(n) != 0: n = n.last()
-                if n is not None: ret.append(n)
+                if n is not None and isinstance(n, pyNode): ret.append(n)
         if len(ret) == 1: return ret[0]
         else: return ret
 
@@ -760,7 +769,6 @@ class pyNodeList(list):
             if not duplicated: parents.append(node.parent())
             if tag != node.name():
                 return ret
-        ret = pyNodeList()
         if len(parents) != 0:
             for parent in parents:
                 ch = parent.child(tag)
@@ -801,13 +809,14 @@ class pyNodeList(list):
             if not duplicated: parents.append(node.parent())
             if tag != node.name():
                 return ret
-        ret = pyNodeList()
         if len(parents) != 0:
             for parent in parents:
                 ch = parent.child(tag)
                 if isinstance(ch, pyNodeList) and len(ch) != 0:
                     n = ch.eq(i - 1)
                     if n is not None: ret.append(n)
+                elif isinstance(ch, pyNodeList):
+                    ret.append(ch)
         if len(ret) == 1: return ret[0]
         else: return ret
 
@@ -1368,8 +1377,6 @@ class pyNode:
                     if bro.name() != 'comment':
                         if bro == self: break
                         ret.append(bro)
-            elif isinstance(brothers, pyNode):
-                ret.append(brothers)
         if len(ret) == 1: return ret[0]
         else: return ret
 
@@ -1390,6 +1397,10 @@ class pyNode:
         ret = pyNodeList()
         if self.has_child():
             children = self.children()
+            if isinstance(children, pyNode):
+                tmp = pyNodeList()
+                tmp.append(children)
+                children = tmp
             if isinstance(children, pyNodeList) and len(children) != 0:
                 for ch in children:
                     ret.append(ch)
@@ -1398,13 +1409,6 @@ class pyNode:
                         ret.extend(grand)
                     elif isinstance(grand, pyNode):
                         ret.append(grand)
-            elif isinstance(children, pyNode):
-                ret.append(children)
-                grand = children.descendant()
-                if isinstance(grand, pyNodeList) and len(grand) != 0:
-                    ret.extend(grand)
-                elif isinstance(grand, pyNode):
-                    ret.append(grand)
         if len(ret) == 1: return ret[0]
         else: return ret
 
@@ -1413,6 +1417,10 @@ class pyNode:
         ret = pyNodeList()
         if self.has_child():
             children = self.children()
+            if isinstance(children, pyNode):
+                tmp = pyNodeList()
+                tmp.append(children)
+                children = tmp
             if isinstance(children, pyNodeList) and len(children) != 0:
                 for ch in children:
                     if ch.name() == t:
@@ -1422,14 +1430,6 @@ class pyNode:
                         ret.extend(descendant)
                     elif isinstance(descendant, pyNode):
                         ret.append(descendant)
-            elif isinstance(children, pyNode):
-                if children.name() == t:
-                    ret.append(children)
-                descendant = children.descendant_tag(t)
-                if isinstance(descendant, pyNodeList) and len(descendant) != 0:
-                    ret.extend(descendant)
-                elif isinstance(descendant, pyNode):
-                    ret.append(descendant)
         if len(ret) == 1: return ret[0]
         else: return ret
 
@@ -1438,6 +1438,10 @@ class pyNode:
         cls_name = re.compile(cls)
         if self.has_child():
             children = self.children()
+            if isinstance(children, pyNode):
+                tmp = pyNodeList()
+                tmp.append(children)
+                children = tmp
             if isinstance(children, pyNodeList) and len(children) != 0:
                 for ch in children:
                     c = ch.attr('class')
@@ -1448,15 +1452,6 @@ class pyNode:
                         ret.extend(descendant)
                     elif isinstance(descendant, pyNode):
                         ret.append(descendant)
-            elif isinstance(children, pyNode):
-                c = children.attr('class')
-                if c is not None and cls_name.search(c) is not None:
-                    ret.append(children)
-                descendant = children.descendant_cls(cls)
-                if isinstance(descendant, pyNodeList) and len(descendant) != 0:
-                    ret.extend(descendant)
-                elif isinstance(descendant, pyNode):
-                    ret.append(descendant)
         if len(ret) == 1: return ret[0]
         else: return ret
 
@@ -1529,17 +1524,14 @@ class pyNode:
         ret = pyNodeList()
         n = self.next_all()
         if isinstance(n, pyNode):
-            if n.has_child():
-                for child in n.children():
-                    descendants = child.descendant()
-                    if isinstance(descendants, pyNode):
-                        ret.append(descendants)
-                    elif isinstance(descendants, pyNodeList):
-                        ret.extend(descendants)
-        elif isinstance(n, pyNodeList) and len(n) != 0:
+            tmp = pyNodeList()
+            tmp.append(n)
+            n = tmp
+        if isinstance(n, pyNodeList) and len(n) != 0:
             for elem in n:
                 if elem.has_child():
                     for child in elem.children():
+                        ret.append(child)
                         descendants = child.descendant()
                         if isinstance(descendants, pyNode):
                             ret.append(descendants)
@@ -1555,17 +1547,14 @@ class pyNode:
         ret = pyNodeList()
         n = self.prev_all()
         if isinstance(n, pyNode):
-            if n.has_child():
-                for child in n.children():
-                    descendants = child.descendant()
-                    if isinstance(descendants, pyNode):
-                        ret.append(descendants)
-                    elif isinstance(descendants, pyNodeList):
-                        ret.extend(descendants)
-        elif isinstance(n, pyNodeList) and len(n) != 0:
+            tmp = pyNodeList()
+            tmp.append(n)
+            n = tmp
+        if isinstance(n, pyNodeList) and len(n) != 0:
             for elem in n:
                 if elem.has_child():
                     for child in elem.children():
+                        ret.append(child)
                         descendants = child.descendant()
                         if isinstance(descendants, pyNode):
                             ret.append(descendants)

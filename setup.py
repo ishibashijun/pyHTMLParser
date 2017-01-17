@@ -1,6 +1,6 @@
 from setuptools import setup
 
-version = '2.0.2'
+version = '2.0.3'
 name = 'pyHTMLParser'
 short_description = 'A simple html parser that constructs DOM tree.'
 long_description = """\
@@ -18,7 +18,7 @@ Example
     second_target_link = Q('a[href$="-target.html"]:nth-child(2)')
     print(second_target_link.attr('href'))
 
-    >>> some-target.html
+    >>> http://www.some-target.com/example.html
     
     Q_close()
 
