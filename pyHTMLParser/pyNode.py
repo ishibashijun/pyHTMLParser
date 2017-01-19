@@ -476,10 +476,11 @@ class pyNodeList(list):
     def select_checked(self):
         ret = pyNodeList()
         for node in self:
-            t = node.attr('checked')
-            if t is not None:
-                if t.lower() == 'checked' or t == '':
-                    ret.append(node)
+            try:
+                t = node._attr['checked']
+                ret.append(node)
+            except KeyError:
+                continue
         if len(ret) == 1: return ret[0]
         else: return ret
 
@@ -494,10 +495,11 @@ class pyNodeList(list):
         tags = ['button', 'input', 'optgroup', 'option', 'select', 'textarea']
         for node in self:
             if node.name() in tags:
-                t = node.attr('disabled')
-                if t is not None:
-                    if t == 'disabled' or t == '':
-                        ret.append(node)
+                try:
+                    t = node._attr['disabled']
+                    ret.append(node)
+                except KeyError:
+                    continue
         if len(ret) == 1: return ret[0]
         else: return ret
 
@@ -525,8 +527,9 @@ class pyNodeList(list):
         tags = ['button', 'input', 'optgroup', 'option', 'select', 'textarea']
         for node in self:
             if node.name() in tags:
-                t = node.attr('disabled')
-                if t is None:
+                try:
+                    t = node._attr['disabled']
+                except KeyError:
                     ret.append(node)
         if len(ret) == 1: return ret[0]
         else: return ret
@@ -1260,7 +1263,22 @@ class pyNode:
                 a = self._attr[attr]
                 if a is not None:
                     self._html += ' ' + attr + '="' + self._attr[attr] + '"'
-            self._html += '>'
+            try:
+                if self._attr['checked'] == None:
+                    self._html += ' checked>'
+                else:
+                    self._html += '>'
+            except KeyError:
+                try:
+                    if self._attr['disabled'] == None:
+                        self._html += ' disabled>'
+                    else:
+                        self._html += '>'
+                except KeyError:
+                     self._html += '>'
+            else:
+                if self._html[-1] != '>':
+                    self._html += '>'
             if not is_self_closing(self.name()):
                 if self.has_child:
                     size = len(self._children)
