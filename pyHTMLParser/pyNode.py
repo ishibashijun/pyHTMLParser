@@ -1514,7 +1514,7 @@ class pyNode:
     def attr_contains_word(self, attr, value):
         a = self.attr(attr)
         if a is not None:
-            val = re.compile(value)
+            val = re.compile('\\b' + value + '\\b')
             if val.search(a) is not None:
                 return True
         return False
